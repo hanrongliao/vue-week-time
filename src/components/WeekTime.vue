@@ -25,15 +25,16 @@
           <td v-for="n in 24" @click="selectDayHour(n)">{{(n - 1)}}</td>
         </tr>
       </thead>
-      <tbody  @mouseleave="selecting = false">
+      <tbody  @mouseleave="drawing = false">
         <tr v-for="m in 7" :key="m">
           <td v-for="n in 24"
               :class="{'selected': selected[m].indexOf(n - 1) > -1}"
               :key="n"
-              @mousedown="selectByMousedown(m, n - 1)"
-              @mouseover="selectByMouseOver(m, n - 1)"
-              @mouseout="selectByMouseout(m, n - 1)"
-              @mouseup="selectByMouseup(m, n - 1)"></td>
+              @dragstart.stop.prevent
+              @mousedown.stop="selectByMousedown(m, n - 1)"
+              @mouseover.stop="selectByMouseOver(m, n - 1)"
+              @mouseout.stop="selectByMouseout(m, n - 1)"
+              @mouseup.stop="selectByMouseup(m, n - 1)"></td>
         </tr>
       </tbody>
     </table>
@@ -50,7 +51,8 @@
     data() {
       return {
         weekdays: ['一', '二', '三', '四', '五', '六', '日'],
-        selecting: false,
+        drawing: false,
+        selecting: true,
         startX: -1,
         startY: -1,
         preX: -1,
@@ -77,46 +79,91 @@
       selectDayPeriod(period) {},
       // 全选一星期的有一小时
       selectDayHour(n) {},
+      // 判断是否已经被选
+      isSelected(m, n) {
+        return this.selected[m].indexOf(n) > -1
+      },
       // 拖动选择开始
       selectByMousedown(m, n) {
-        this.selecting = true
+        this.selecting = !this.isSelected(m, n)
+        this.drawing = true
         this.startX = m
         this.startY = n
-      },
-      // 拖动选择结束
-      selectByMouseup(m, n) {
-        if (!this.selecting) return
-        const flag = this.selected[m].indexOf(n)
-        if (flag === -1) {
-          this.selected[m].push(n)
-        }
-        if (flag > -1 && this.startY === n && this.startX === m) {
-          this.selected[m].splice(flag, 1)
-        }
-        this.selecting = false
-        console.log(this.selected)
+        this.preX = m
+        this.preY = n
       },
       // 拖动选择某小时
       selectByMouseOver(m, n) {
-        if (!this.selecting) return
+        if (!this.drawing) return
         const startX = m > this.startX ? this.startX : m
         const startY = n > this.startY ? this.startY : n
         const endX = m > this.startX ? m : this.startX
         const endY = n > this.startY ? n : this.startY
         for (let i = startX; i <= endX; i++) {
           for (let j = startY; j <= endY; j++) {
-            this.selectHour(i, j)
+            if (this.selecting) {
+              this.selectHour(i, j)
+            } else {
+              this.deleteHour(i, j)
+            }
           }
         }
         this.checkSelectedValid(m, n)
       },
       // 检查拖动选择是否有效
       checkSelectedValid(m, n) {
-
+        const currentList = [];
+        const preList = [];
+        // 起点到m,n的集合
+        const startX = m > this.startX ? this.startX : m
+        const startY = n > this.startY ? this.startY : n
+        const endX = m > this.startX ? m : this.startX
+        const endY = n > this.startY ? n : this.startY
+        for (let i = startX; i <= endX; i++) {
+          for (let j = startY; j <= endY; j++) {
+            currentList.push(`${i},${j}`)
+          }
+        }
+        // 起点到preX，preY的点集
+        const preStartX = this.preX > this.startX ? this.startX : this.preX
+        const preStartY = this.preY > this.startY ? this.startY : this.preY
+        const preEndX = this.preX > this.startX ? this.preX : this.startX
+        const preEndY = this.preY > this.startY ? this.preY : this.startY
+        for (let i = preStartX; i <= preEndX; i++) {
+          for (let j = preStartY; j <= preEndY; j++) {
+            preList.push(`${i},${j}`)
+          }
+        }
+        // 求交集
+        preList.forEach((item) => {
+          const flag = currentList.indexOf(item);
+          if (flag === -1) {
+            const point = item.split(',');
+            if (this.selecting) {
+              this.deleteHour(+point[0], +point[1]);
+            } else {
+              this.selectHour(+point[0], +point[1])
+            }
+          }
+        })
+      },
+      // 更新
+      selectByMouseout(m, n) {
+        this.preX = m;
+        this.preY = n;
+      },
+      // 拖动选择结束
+      selectByMouseup(m, n) {
+        if (!this.drawing) return
+        if (this.selecting) {
+          this.selectHour(m, n)
+        } else {
+          this.deleteHour(m, n)
+        }
+        this.drawing = false
       },
       selectHour(m, n) {
-        const flag = this.selected[m].indexOf(n)
-        if (flag === -1) {
+        if (!this.isSelected(m, n)) {
           this.selected[m].push(n)
         }
       },
@@ -125,11 +172,6 @@
         if (flag > -1) {
           this.selected[m].splice(flag, 1)
         }
-      },
-      // 更新
-      selectByMouseout(m, n) {
-        this.preX = m;
-        this.preY = n;
       },
       // 清空选择
       clear() {
