@@ -1,13 +1,35 @@
 var path = require('path')
 var webpack = require('webpack')
 
-module.exports = {
-  entry: './src/main.js',
-  output: {
+const entry = process.env.NODE_ENV === 'production' ? './src/index.js' : './src/main.js';
+
+const output = process.env.NODE_ENV === 'production' ?
+  {
     path: path.resolve(__dirname, './dist'),
     publicPath: '/dist/',
-    filename: 'build.js'
-  },
+    filename: 'index.min.js',
+    library: 'vue-week-time',
+    libraryTarget: 'umd',
+    umdNamedDefine: true
+  } : {
+    path: path.resolve(__dirname, './dist'),
+    publicPath: '/dist/',
+    filename: 'build.js',
+  };
+
+const externals = process.env.NODE_ENV === 'production' ? {
+    vue: {
+      root: 'Vue',
+      commonjs: 'vue',
+      commonjs2: 'vue',
+      amd: 'vue'
+    }
+  } : {};
+
+module.exports = {
+  entry,
+  output,
+  externals,
   module: {
     rules: [
       {
@@ -96,7 +118,7 @@ if (process.env.NODE_ENV === 'production') {
       }
     }),
     new webpack.optimize.UglifyJsPlugin({
-      sourceMap: true,
+      sourceMap: false,
       compress: {
         warnings: false
       }
