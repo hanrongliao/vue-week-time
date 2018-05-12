@@ -1,6 +1,8 @@
 <template>
   <div id="app">
-    <week-time :initData="{}"></week-time>
+    <week-time :weekTimes="weekTimes"
+                @change="getWeekTimes"></week-time>
+    <div>{{text}}</div>
   </div>
 </template>
 
@@ -14,6 +16,22 @@ export default {
   },
   data () {
     return {
+      weekTimes: {
+        1: [1],
+        2: [2],
+        3: [3],
+        4: [4],
+        5: [5],
+        6: [6],
+        7: [7],
+      },
+      text: '',
+    }
+  },
+  methods: {
+    getWeekTimes(times, text) {
+      this.weekTimes = times;
+      this.text = text;
     }
   }
 }

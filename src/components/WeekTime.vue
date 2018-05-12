@@ -3,29 +3,32 @@
     <table class="left">
       <thead>
         <tr>
+          <th @click="selectAll">全选</th>
+        </tr>
+        <tr>
           <th @click="clear">清空</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="(item, index) in weekdays">
-          <td @click="selectWeekday(index)">{{ '星期' + item}}</td>
+          <td @click="selectWeekday(index + 1)">{{ '星期' + item}}</td>
         </tr>
       </tbody>
     </table>
     <table class="right">
       <thead>
         <tr>
-          <th colspan="7" @click="selectDayPeriod('EM')">凌晨时段</th>
-          <th colspan="4" @click="selectDayPeriod('AM')">上午时段</th>
-          <th colspan="4" @click="selectDayPeriod('MM')">中午时段</th>
-          <th colspan="4" @click="selectDayPeriod('PM')">下午时段</th>
-          <th colspan="5" @click="selectDayPeriod('NM')">夜晚时段</th>
+          <th colspan="7" @click="selectDayPeriod(0, 6)">凌晨时段</th>
+          <th colspan="4" @click="selectDayPeriod(7, 10)">上午时段</th>
+          <th colspan="4" @click="selectDayPeriod(11, 14)">中午时段</th>
+          <th colspan="4" @click="selectDayPeriod(15, 18)">下午时段</th>
+          <th colspan="5" @click="selectDayPeriod(19, 23)">夜晚时段</th>
         </tr>
         <tr class="hour">
-          <td v-for="n in 24" @click="selectDayHour(n)">{{(n - 1)}}</td>
+          <td v-for="n in 24" @click="selectDayPeriod(n - 1)">{{(n - 1)}}</td>
         </tr>
       </thead>
-      <tbody  @mouseleave="drawing = false">
+      <tbody  @mouseleave="mouseLeave">
         <tr v-for="m in 7" :key="m">
           <td v-for="n in 24"
               :class="{'selected': selected[m].indexOf(n - 1) > -1}"
@@ -41,11 +44,14 @@
   </div>
 </template>
 <script>
+  import Util from '../util'
+
   export default {
     name: 'weekTime',
     props: {
-      initData: {
+      weekTimes: {
         type: Object,
+        default: () => {},
       }
     },
     data() {
@@ -68,17 +74,83 @@
           6: [],
           7: [],
         },
+        selectedText: '',
       }
     },
     created() {
+      this.initData();
     },
     methods: {
+      initData() {
+        for (let i = 1; i <= 7; i++) {
+          const isArray = Array.isArray(this.weekTimes[i])
+          if (isArray) {
+            this.selected[i] = [].concat(this.weekTimes[i])
+          } else {
+            this.selected[i] = []
+          }
+        }
+      },
       // 全选某星期
-      selectWeekday(index) {},
+      selectWeekday(i) {
+        if (this.selected[i].length !== 24) {
+          const hours = []
+          for (let j = 0; j < 24; j++) {
+            hours.push(j)
+          }
+          this.selected[i] = hours;
+        } else {
+          this.selected[i].splice(0, this.selected[i].length)
+        }
+        this.emitWeekTimes()
+      },
       // 全选一星期的某个时段
-      selectDayPeriod(period) {},
-      // 全选一星期的有一小时
-      selectDayHour(n) {},
+      selectDayPeriod(start, end) {
+        if (!end) {
+          const isFull = this.isSelectedDayPeriod(start)
+          if (isFull) {
+            for (let i = 1; i <= 7; i++) {
+              this.deleteHour(i, start)
+            }
+          } else {
+            for (let i = 1; i <= 7; i++) {
+              this.selectHour(i, start)
+            }
+          }
+        } else {
+          let isFull = true
+          for (let i = start; i <= end; i++) {
+            if (!this.isSelectedDayPeriod(i)) {
+              isFull = false
+              break
+            }
+          }
+          if (isFull) {
+            for (let i = 1; i <= 7; i++) {
+              for (let j = start; j <= end; j++) {
+                this.deleteHour(i, j)
+              }
+            }
+          } else {
+            for (let i = 1; i <= 7; i++) {
+              for (let j = start; j <= end; j++) {
+                this.selectHour(i, j)
+              }
+            }
+          }
+        }
+        this.emitWeekTimes()
+      },
+      // 判断某个时段是否在一周都选上
+      isSelectedDayPeriod(j) {
+        const result = true;
+        for(let i = 1; i <= 7; i++) {
+          if (!this.isSelected(i, j)) {
+            return !result
+          }
+        }
+        return result
+      },
       // 判断是否已经被选
       isSelected(m, n) {
         return this.selected[m].indexOf(n) > -1
@@ -161,6 +233,13 @@
           this.deleteHour(m, n)
         }
         this.drawing = false
+        this.emitWeekTimes()
+      },
+      mouseLeave() {
+        if (this.drawing) {
+          this.emitWeekTimes()
+        }
+        this.drawing = false
       },
       selectHour(m, n) {
         if (!this.isSelected(m, n)) {
@@ -173,14 +252,85 @@
           this.selected[m].splice(flag, 1)
         }
       },
+      // 全选
+      selectAll() {
+        const hours = [];
+        for (let j = 0; j <= 23; j++) {
+          hours.push(j);
+        }
+        for(let i = 1; i <= 7; i++) {
+          this.selected[i] = [].concat(hours)
+        }
+        this.emitWeekTimes()
+      },
       // 清空选择
       clear() {
         for (let i = 1; i < 8; i ++) {
           this.selected[i] = []
         }
-      }
+        this.emitWeekTimes()
+      },
+      emitWeekTimes() {
+        for (let i = 1; i <= 7; i++) {
+          this.selected[i].sort((a, b) => a - b)
+        }
+        this.selectedText = this.getWeekTimeString(this.selected)
+        this.$emit('change', this.selected, this.selectedText)
+      },
+      // 时间段数据处理成人读形式
+      getWeekTimeString(week) {
+        const keys = Object.keys(week)
+        const isAll = keys.every(key => week[key].length === 24) // 全天候
+        const isNone = keys.every(key => week[key].length === 0) // 未选择
+        if (isAll) return '全天侯'
+        if (isNone) return '全不选'
+        const hours = this.hoursPretreatment(week);
+        return this.weekdayPretreatment(hours);
+      },
+      // 小时数据转化为人读形式
+      hoursPretreatment(week) {
+        const keys = Object.keys(week)
+        const hours = []
+        keys.forEach((key) => {
+          const hourList = Util.numberArrayGroup(week[key])
+          const hourListText = []
+          hourList.forEach((hour) => {
+            if (hour.length > 1) {
+              //const text = hour[0] + '~' + hour[hour.length - 1] // 将连续数用 '~' 连起来
+              const text = `${hour[0]}~${hour[hour.length - 1]}时`
+              hourListText.push(text)
+            } else {
+              // hourListText.push(hour.join('~'))
+              hourListText.push(`${hour.join('')}时`)
+            }
+          });
+          hours.push(hourListText.join(',')) // 拼接1天的事件段
+        });
+        return hours
+      },
+      // 将小时数据和周数据拼接,并转化为人读形式
+      weekdayPretreatment(hours) {
+        const weekday = []
+        const day = ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+        const eqValIndex = Util.getEqualValueIndex(hours) // 相同时间的下标的二维数组
+        eqValIndex.forEach((val) => {
+          const valList = Util.numberArrayGroup(val) // 连续的周的index
+          const valText = [];
+          valList.forEach((item) => {
+            if (item.length > 1) {
+              const text = day[item[0]] + '~' + day[item[item.length - 1]]
+              valText.push(text);
+            } else {
+              valText.push(day[item[0]])
+            }
+          });
+          if (hours[val[0]].length > 0) {
+            weekday.push(valText.join(',') + ': ' + hours[val[0]])
+          }
+        });
+        return weekday.join('; ')
+      },
     }
-
   }
 </script>
 <style type="text/css" lang="scss">
@@ -205,7 +355,7 @@
       width: 56px;
       cursor: pointer;
       thead tr {
-        height: 56px;
+        height: 28px;
       }
       td, th{
         border-right: none;
