@@ -78,13 +78,14 @@
       }
     },
     created() {
-      this.initData();
+      this.initData()
     },
     mounted() {
       this.emitWeekTimes();
     },
     methods: {
       initData() {
+        if (!this.weekTimes || !(this.weekTimes instanceof Object)) return;
         for (let i = 1; i <= 7; i++) {
           const isArray = Array.isArray(this.weekTimes[i])
           if (isArray) {
@@ -299,11 +300,10 @@
           const hourListText = []
           hourList.forEach((hour) => {
             if (hour.length > 1) {
-              //const text = hour[0] + '~' + hour[hour.length - 1] // 将连续数用 '~' 连起来
+              // 将连续数用 '~' 连起来
               const text = `${hour[0]}~${hour[hour.length - 1]}时`
               hourListText.push(text)
             } else {
-              // hourListText.push(hour.join('~'))
               hourListText.push(`${hour.join('')}时`)
             }
           });
@@ -348,7 +348,7 @@
         border: 1px solid #ccc;
       }
       tbody tr {
-        height: 40px;
+        height: 36px;
       }
     };
     table th {

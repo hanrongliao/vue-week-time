@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <week-time :weekTimes="weekTimes"
+    <week-time 
                 @change="getWeekTimes"></week-time>
     <div>{{text}}</div>
   </div>
