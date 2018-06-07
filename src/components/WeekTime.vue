@@ -34,7 +34,7 @@
               :class="{'selected': selected[m].indexOf(n - 1) > -1}"
               :key="n"
               @dragstart.stop.prevent
-              @mousedown.stop="selectByMousedown(m, n - 1)"
+              @mousedown.stop="selectByMousedown(m, n - 1, $event)"
               @mouseover.stop="selectByMouseOver(m, n - 1)"
               @mouseout.stop="selectByMouseout(m, n - 1)"
               @mouseup.stop="selectByMouseup(m, n - 1)"></td>
@@ -160,7 +160,8 @@
         return this.selected[m].indexOf(n) > -1
       },
       // 拖动选择开始
-      selectByMousedown(m, n) {
+      selectByMousedown(m, n, $event) {
+        if ($event.button !== 0) return;
         this.selecting = !this.isSelected(m, n)
         this.drawing = true
         this.startX = m
