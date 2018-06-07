@@ -54,7 +54,7 @@ export default {
  }
 ```
 ## 回调事件(event callback)`change` 
-weekTime组件初始化（mounted）和拖动选择时间时会触发change事件，回调参数有两个，分别是weekTime对象和经过语义化解析weekTime字符串。 
+weekTime组件初始化（mounted）和拖动选择时间时会触发change事件，回调参数有两个，分别是weekTime对象和经过语义化解析的weekTime字符串。 
 
 ## License
 MIT
