@@ -80,6 +80,9 @@
     created() {
       this.initData();
     },
+    mounted() {
+      this.emitWeekTimes();
+    },
     methods: {
       initData() {
         for (let i = 1; i <= 7; i++) {
