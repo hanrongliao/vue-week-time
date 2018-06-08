@@ -77,15 +77,20 @@
         selectedText: '',
       }
     },
+    watch: {
+      weekTimes() {
+        this.initData()
+      }
+    },
     created() {
       this.initData()
     },
     mounted() {
-      this.emitWeekTimes();
+      this.emitWeekTimes()
     },
     methods: {
       initData() {
-        if (!this.weekTimes || !(this.weekTimes instanceof Object)) return;
+        if (!this.weekTimes || !(this.weekTimes instanceof Object)) return
         for (let i = 1; i <= 7; i++) {
           const isArray = Array.isArray(this.weekTimes[i])
           if (isArray) {
