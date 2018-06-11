@@ -25,7 +25,7 @@
           <th colspan="5" @click="selectDayPeriod(19, 23)">夜晚时段</th>
         </tr>
         <tr class="hour">
-          <td v-for="n in 24" @click="selectDayPeriod(n - 1)">{{(n - 1)}}</td>
+          <th v-for="n in 24" @click="selectDayPeriod(n - 1)">{{(n - 1)}}</th>
         </tr>
       </thead>
       <tbody  @mouseleave="mouseLeave">
@@ -351,7 +351,6 @@
       td, th {
         word-break: keep-all;
         text-align: center;
-        border: 1px solid #ccc;
       }
       tbody tr {
         height: 36px;
@@ -363,6 +362,10 @@
     table.left {
       width: 56px;
       cursor: pointer;
+      tr {
+        border: 1px solid #ccc;
+        border-right: none;
+      }
       thead tr {
         height: 28px;
       }
@@ -375,10 +378,13 @@
       }
     }
     table.right {
+      td, th {
+        border: 1px solid #ccc;
+      }
       thead tr {
         height: 28px;
         cursor: pointer;
-        &.hour td {
+        &.hour th {
           width: 22px;
           min-width: 19px;
           white-space: nowrap;
