@@ -349,6 +349,7 @@
     table {
       border-collapse: collapse;
       td, th {
+        border: 1px solid #ccc;
         word-break: keep-all;
         text-align: center;
       }
@@ -361,11 +362,9 @@
     }
     table.left {
       width: 56px;
+      flex-grow: 0;
+      flex-shrink: 0;
       cursor: pointer;
-      tr {
-        border: 1px solid #ccc;
-        border-right: none;
-      }
       thead tr {
         height: 28px;
       }
@@ -378,9 +377,6 @@
       }
     }
     table.right {
-      td, th {
-        border: 1px solid #ccc;
-      }
       thead tr {
         height: 28px;
         cursor: pointer;
