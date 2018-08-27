@@ -1,13 +1,15 @@
-# 最重要的事情(Most impartant thing)
-...
 
+## 介绍
+本组件实现了选择一周中的某个时间段功能。可通过拖拽选择和点击选择时间段。
 
-## 介绍(introduction)
+![全不选](./image/not-select.png)
 
-A week time select plugin for vue. It's look like:
-()
+![选择](./image/select-1.png)
 
-## 开始(start)
+## 使用场景
+1. 广告投放时段选择
+
+## 安装使用
 
 ``` bash
  npm i vue-week-time --save
@@ -36,7 +38,7 @@ export default {
 </script>
 ```
 ## 参数(parmas)
-| props        | default       | 
+| props        | default       |
 | -------------|:-------------:|
 |  weekTime    | \{}           |
 
@@ -48,13 +50,15 @@ export default {
      2: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23], // 周二全选
      3: [20, 21, 8, 9], // 周三选中8-9时，20-21时
      4: [], // 周四未选
-     5: [], 
+     5: [],
      6: [],
      7: [],
  }
 ```
-## 回调事件(event callback)`change` 
-weekTime组件初始化（mounted）和拖动选择时间时会触发change事件，回调参数有两个，分别是weekTime对象和经过语义化解析的weekTime字符串。 
+## 回调事件(event callback)`change`
+weekTime组件初始化（mounted）和拖动选择时间时会触发change事件，回调参数有两个，分别是weekTime对象和经过语义化解析的weekTime字符串。
 
-## License
-MIT
+## something else
+license: MIT
+
+issue:  [这里](https://github.com/hanrongliao/vue-week-time/issues)
