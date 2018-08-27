@@ -18,11 +18,11 @@
     <table class="right">
       <thead>
         <tr>
-          <th colspan="7" @click="selectDayPeriod(0, 6)">凌晨时段</th>
-          <th colspan="4" @click="selectDayPeriod(7, 10)">上午时段</th>
-          <th colspan="4" @click="selectDayPeriod(11, 14)">中午时段</th>
-          <th colspan="4" @click="selectDayPeriod(15, 18)">下午时段</th>
-          <th colspan="5" @click="selectDayPeriod(19, 23)">夜晚时段</th>
+          <th colspan="7" @click="selectDayPeriod(0, 6)">凌晨</th>
+          <th colspan="4" @click="selectDayPeriod(7, 10)">上午</th>
+          <th colspan="4" @click="selectDayPeriod(11, 14)">中午</th>
+          <th colspan="4" @click="selectDayPeriod(15, 18)">下午</th>
+          <th colspan="5" @click="selectDayPeriod(19, 23)">夜晚</th>
         </tr>
         <tr class="hour">
           <th v-for="n in 24" @click="selectDayPeriod(n - 1)">{{(n - 1)}}</th>
@@ -292,7 +292,7 @@
         const keys = Object.keys(week)
         const isAll = keys.every(key => week[key].length === 24) // 全天候
         const isNone = keys.every(key => week[key].length === 0) // 未选择
-        if (isAll) return '全天侯'
+        if (isAll) return '全天'
         if (isNone) return '全不选'
         const hours = this.hoursPretreatment(week);
         return this.weekdayPretreatment(hours);
@@ -307,7 +307,7 @@
           hourList.forEach((hour) => {
             if (hour.length > 1) {
               // 将连续数用 '~' 连起来
-              const text = `${hour[0]}~${hour[hour.length - 1]}时`
+              const text = `${hour[0]} ~ ${hour[hour.length - 1]}时`
               hourListText.push(text)
             } else {
               hourListText.push(`${hour.join('')}时`)
@@ -327,7 +327,7 @@
           const valText = [];
           valList.forEach((item) => {
             if (item.length > 1) {
-              const text = day[item[0]] + '~' + day[item[item.length - 1]]
+              const text = day[item[0]] + ' ~ ' + day[item[item.length - 1]]
               valText.push(text);
             } else {
               valText.push(day[item[0]])
