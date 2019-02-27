@@ -3,26 +3,26 @@
     <table class="left">
       <thead>
         <tr>
-          <th @click="selectAll">全选</th>
+          <th @click="selectAll">{{locale[7] || '全选'}}</th>
         </tr>
         <tr>
-          <th @click="clear">清空</th>
+          <th @click="clear">{{locale[8] || '清空'}}</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="(item, index) in weekdays">
-          <td @click="selectWeekday(index + 1)">{{ '星期' + item}}</td>
+          <td @click="selectWeekday(index + 1)">{{ locale[index] || item}}</td>
         </tr>
       </tbody>
     </table>
     <table class="right">
       <thead>
         <tr>
-          <th colspan="7" @click="selectDayPeriod(0, 6)">凌晨</th>
-          <th colspan="4" @click="selectDayPeriod(7, 10)">上午</th>
-          <th colspan="4" @click="selectDayPeriod(11, 14)">中午</th>
-          <th colspan="4" @click="selectDayPeriod(15, 18)">下午</th>
-          <th colspan="5" @click="selectDayPeriod(19, 23)">夜晚</th>
+          <th colspan="7" @click="selectDayPeriod(0, 6)">{{locale[9] || '凌晨'}}</th>
+          <th colspan="4" @click="selectDayPeriod(7, 10)">{{locale[10] || '上午'}}</th>
+          <th colspan="4" @click="selectDayPeriod(11, 14)">{{locale[11] || '中午'}}</th>
+          <th colspan="4" @click="selectDayPeriod(15, 18)">{{locale[12] || '下午'}}</th>
+          <th colspan="5" @click="selectDayPeriod(19, 23)">{{ locale || '夜晚'}}</th>
         </tr>
         <tr class="hour">
           <th v-for="n in 24" @click="selectDayPeriod(n - 1)">{{(n - 1)}}</th>
@@ -52,11 +52,15 @@
       weekTimes: {
         type: Object,
         default: () => {},
-      }
+      },
+      locale: {
+        type: Object,
+        default: () => {}
+      },
     },
     data() {
       return {
-        weekdays: ['一', '二', '三', '四', '五', '六', '日'],
+        weekdays: ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'],
         drawing: false,
         selecting: true,
         startX: -1,
@@ -320,7 +324,7 @@
       // 将小时数据和周数据拼接,并转化为人读形式
       weekdayPretreatment(hours) {
         const weekday = []
-        const day = ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+        const day = ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日']
         const eqValIndex = Util.getEqualValueIndex(hours) // 相同时间的下标的二维数组
         eqValIndex.forEach((val) => {
           const valList = Util.numberArrayGroup(val) // 连续的周的index
