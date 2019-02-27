@@ -18,11 +18,11 @@
     <table class="right">
       <thead>
         <tr>
-          <th colspan="7" @click="selectDayPeriod(0, 6)">{{locale[9] || '凌晨'}}</th>
-          <th colspan="4" @click="selectDayPeriod(7, 10)">{{locale[10] || '上午'}}</th>
-          <th colspan="4" @click="selectDayPeriod(11, 14)">{{locale[11] || '中午'}}</th>
-          <th colspan="4" @click="selectDayPeriod(15, 18)">{{locale[12] || '下午'}}</th>
-          <th colspan="5" @click="selectDayPeriod(19, 23)">{{ locale || '夜晚'}}</th>
+          <th colspan="7" @click="selectDayPeriod(0, 6)">{{locale[9] || '凌晨时段'}}</th>
+          <th colspan="4" @click="selectDayPeriod(7, 10)">{{locale[10] || '上午时段'}}</th>
+          <th colspan="4" @click="selectDayPeriod(11, 14)">{{locale[11] || '中午时段'}}</th>
+          <th colspan="4" @click="selectDayPeriod(15, 18)">{{locale[12] || '下午时段'}}</th>
+          <th colspan="5" @click="selectDayPeriod(19, 23)">{{locale[13] || '夜晚时段'}}</th>
         </tr>
         <tr class="hour">
           <th v-for="n in 24" @click="selectDayPeriod(n - 1)">{{(n - 1)}}</th>
@@ -51,11 +51,11 @@
     props: {
       weekTimes: {
         type: Object,
-        default: () => {},
+        default: () => ({}),
       },
       locale: {
         type: Object,
-        default: () => {}
+        default: () => ({}),
       },
     },
     data() {
@@ -375,6 +375,8 @@
       td, th{
         border-right: none;
         min-width: 45px;
+        white-space: nowrap;
+        word-break: keep-all;
         &:hover {
           background-color: #f2f2f2;
         }

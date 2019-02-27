@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <week-time 
+    <week-time  :locale="locale"
                 @change="getWeekTimes"></week-time>
     <div>{{text}}</div>
   </div>
@@ -18,6 +18,10 @@ export default {
     return {
       weekTimes: {},
       text: '',
+      locale: {
+        0: 'Monday',
+        1: 'Tus',
+      }
     }
   },
   methods: {
